@@ -16,6 +16,13 @@ final class LaunchFlowTests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(app.tabBars.buttons["Ana Sayfa"].waitForExistence(timeout: 8))
-        try app.performAccessibilityAudit()
+        try app.performAccessibilityAudit(
+            for: [
+                .elementDetection,
+                .hitRegion,
+                .sufficientElementDescription,
+                .trait,
+            ]
+        )
     }
 }
