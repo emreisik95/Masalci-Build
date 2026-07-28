@@ -10,6 +10,7 @@ final class LaunchFlowTests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Oluştur"].exists)
         XCTAssertTrue(app.tabBars.buttons["Favoriler"].exists)
         XCTAssertTrue(app.tabBars.buttons["Ayarlar"].exists)
+        keepScreenshot(of: app, named: "01-ana-sayfa")
     }
 
     func testHomePassesAccessibilityAudit() throws {
@@ -25,5 +26,12 @@ final class LaunchFlowTests: XCTestCase {
                 .trait,
             ]
         )
+    }
+
+    private func keepScreenshot(of app: XCUIApplication, named name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

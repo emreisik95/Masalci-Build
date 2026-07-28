@@ -100,9 +100,19 @@ jobs:
             -destination "platform=iOS Simulator,id=$MASALCI_SIMULATOR_ID" \
             -derivedDataPath "$RUNNER_TEMP/MasalciTestDerivedData" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
+            -resultBundlePath "$RUNNER_TEMP/MasalciUI.xcresult" \
             -only-testing:MasalciUITests \
             -parallel-testing-enabled NO \
             MASALCI_DEVICE_PREVIEW=YES
+
+      - name: SwiftUI ekran ve test kanıtlarını yükle
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: masalci-swiftui-ekran-kaniti
+          path: ${{ runner.temp }}/MasalciUI.xcresult
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: İmzasız cihaz uygulamasını derle
         env:

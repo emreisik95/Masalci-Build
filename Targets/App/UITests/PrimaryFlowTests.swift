@@ -19,6 +19,7 @@ final class PrimaryFlowTests: XCTestCase {
         XCTAssertTrue(app.buttons["Geri dön"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Favorilerden çıkar"].exists)
         XCTAssertTrue(app.staticTexts["Ay Işığını Arayan Minik Tavşan"].exists)
+        keepScreenshot(of: app, named: "04-masal-ayrintisi")
     }
 
     func testStoryCanBeCreatedFromPreviewBackend() {
@@ -26,6 +27,7 @@ final class PrimaryFlowTests: XCTestCase {
         app.tabBars.buttons["Oluştur"].tap()
 
         XCTAssertTrue(app.staticTexts["Masal Oluştur"].waitForExistence(timeout: 5))
+        keepScreenshot(of: app, named: "02-masal-olustur")
         let prompt = app.textViews["Masal fikri"]
         XCTAssertTrue(prompt.waitForExistence(timeout: 5))
         prompt.tap()
@@ -45,6 +47,7 @@ final class PrimaryFlowTests: XCTestCase {
 
         let favorite = app.descendants(matching: .any)["masal-karti.mercan-bahcesi"]
         XCTAssertTrue(favorite.waitForExistence(timeout: 5))
+        keepScreenshot(of: app, named: "03-favoriler")
         favorite.tap()
 
         XCTAssertTrue(app.buttons["Geri dön"].waitForExistence(timeout: 5))
@@ -106,5 +109,12 @@ final class PrimaryFlowTests: XCTestCase {
                 .trait,
             ]
         )
+    }
+
+    private func keepScreenshot(of app: XCUIApplication, named name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }
