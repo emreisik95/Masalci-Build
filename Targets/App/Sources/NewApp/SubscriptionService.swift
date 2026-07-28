@@ -56,6 +56,8 @@ final class SubscriptionService {
         guard configuredUserID != nil else { return }
         state = .loading
         do {
+            let customerInfo = try await Purchases.shared.customerInfo()
+            updatePremium(from: customerInfo)
             let offerings = try await Purchases.shared.offerings()
             let packages = offerings.current?.availablePackages ?? []
             packagesByID = Dictionary(uniqueKeysWithValues: packages.map { ($0.identifier, $0) })
@@ -67,8 +69,6 @@ final class SubscriptionService {
                     price: package.storeProduct.localizedPriceString
                 )
             }
-            let customerInfo = try await Purchases.shared.customerInfo()
-            updatePremium(from: customerInfo)
             state = options.isEmpty
                 ? .unavailable("Satın alma seçenekleri şu anda bulunamıyor.")
                 : .ready

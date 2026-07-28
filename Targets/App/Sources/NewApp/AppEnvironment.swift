@@ -86,7 +86,7 @@ final class AppEnvironment {
                 }
             }
             if let profile {
-                await subscriptionService.configure(userID: profile.id)
+                await configureSubscription(for: profile.id)
             }
             launchState = .ready
         } catch {
@@ -129,7 +129,7 @@ final class AppEnvironment {
         )
         try await sessionStore.saveToken(session.sessionToken)
         profile = session.user
-        await subscriptionService.configure(userID: session.user.id)
+        await configureSubscription(for: session.user.id)
     }
 
     func deleteAccount() async throws {
@@ -140,7 +140,7 @@ final class AppEnvironment {
         launchState = .starting
         try await createAnonymousSession()
         if let profile {
-            await subscriptionService.configure(userID: profile.id)
+            await configureSubscription(for: profile.id)
         }
         launchState = .ready
     }
@@ -154,6 +154,12 @@ final class AppEnvironment {
         )
         try await sessionStore.saveToken(session.sessionToken)
         profile = session.user
+    }
+
+    private func configureSubscription(for userID: String) async {
+        await subscriptionService.configure(userID: userID)
+        guard let profile, profile.id == userID else { return }
+        self.profile = profile.mergingPremiumEntitlement(subscriptionService.isPremium)
     }
 
     private func installationID() -> String {

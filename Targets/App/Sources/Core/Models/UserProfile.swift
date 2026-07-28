@@ -18,6 +18,15 @@ public struct UserProfile: Codable, Equatable, Identifiable, Sendable {
         self.premium = premium
     }
 
+    public func mergingPremiumEntitlement(_ entitlementIsActive: Bool) -> UserProfile {
+        UserProfile(
+            id: id,
+            accountKind: accountKind,
+            credits: credits,
+            premium: premium || entitlementIsActive
+        )
+    }
+
     enum CodingKeys: String, CodingKey {
         case id
         case accountKind = "account_kind"
