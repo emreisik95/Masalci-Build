@@ -19,9 +19,10 @@ targets:
       - path: Targets/App/Sources/NewApp
       - path: Targets/App/Sources/DesignSystem
       - path: Targets/App/Sources/Features
-    resources:
       - path: Targets/App/Resources/Assets.xcassets
+        buildPhase: resources
       - path: Targets/App/Resources/PrivacyInfo.xcprivacy
+        buildPhase: resources
     dependencies:
       - package: MasalciCore
       - package: RevenueCat
@@ -69,8 +70,8 @@ targets:
       - path: Targets/App/Tests
         excludes:
           - Fixtures
-    resources:
       - path: Targets/App/Tests/Fixtures
+        buildPhase: resources
     dependencies:
       - target: Masalci
       - package: MasalciCore
