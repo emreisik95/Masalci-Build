@@ -102,14 +102,19 @@ final class PrimaryFlowTests: XCTestCase {
     }
 
     private func audit(_ app: XCUIApplication) throws {
-        try app.performAccessibilityAudit(
-            for: [
-                .elementDetection,
-                .hitRegion,
-                .sufficientElementDescription,
-                .trait,
-            ]
-        )
+        let auditTypes: XCUIAccessibilityAuditType = [
+            .elementDetection,
+            .hitRegion,
+            .sufficientElementDescription,
+            .trait,
+        ]
+        do {
+            try app.performAccessibilityAudit(for: auditTypes)
+        } catch let error as NSError
+            where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
+                && error.code == -56 {
+            try app.performAccessibilityAudit(for: auditTypes)
+        }
     }
 
     private func keepScreenshot(of app: XCUIApplication, named name: String) {
