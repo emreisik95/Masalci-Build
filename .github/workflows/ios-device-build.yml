@@ -41,6 +41,28 @@ jobs:
       - name: Xcode projesini üret
         run: xcodegen generate --spec project.yml
 
+      - name: SwiftUI simülatör testlerini çalıştır
+        shell: bash
+        run: |
+          set -o pipefail
+          simulator_id=$(
+            xcrun simctl list devices available --json |
+              ruby -rjson -e '
+                devices = JSON.parse(STDIN.read).fetch("devices").values.flatten
+                iphone = devices.find { |device| device.fetch("name", "").start_with?("iPhone") }
+                abort "Kullanılabilir iPhone simülatörü bulunamadı." unless iphone
+                print iphone.fetch("udid")
+              '
+          )
+          xcodebuild test \
+            -project Masalci.xcodeproj \
+            -scheme Masalci \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$simulator_id" \
+            -derivedDataPath "$RUNNER_TEMP/MasalciTestDerivedData" \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
+            MASALCI_DEVICE_PREVIEW=YES
+
       - name: İmzasız cihaz uygulamasını derle
         run: |
           xcodebuild build \
