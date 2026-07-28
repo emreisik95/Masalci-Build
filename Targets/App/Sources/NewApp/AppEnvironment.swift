@@ -41,11 +41,31 @@ final class AppEnvironment {
         let baseURL = configured.flatMap(URL.init(string:))
             ?? URL(string: "https://masalci-api.emre.zip")!
         let revenueCatAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevenueCatAPIKey") as? String
+        let session: URLSession
+        if devicePreviewEnabled {
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.protocolClasses = [DevicePreviewURLProtocol.self]
+            session = URLSession(configuration: configuration)
+        } else {
+            session = .shared
+        }
         return AppEnvironment(
             apiBaseURL: baseURL,
             sessionStore: KeychainSessionStore(),
-            revenueCatAPIKey: revenueCatAPIKey ?? ""
+            revenueCatAPIKey: revenueCatAPIKey ?? "",
+            session: session
         )
+    }
+
+    private static var devicePreviewEnabled: Bool {
+        switch Bundle.main.object(forInfoDictionaryKey: "MasalciDevicePreview") {
+        case let value as Bool:
+            value
+        case let value as String:
+            (value as NSString).boolValue
+        default:
+            false
+        }
     }
 
     func start() async {

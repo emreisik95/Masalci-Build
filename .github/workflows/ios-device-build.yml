@@ -20,20 +20,20 @@ jobs:
       - name: Kaynak kodu al
         uses: actions/checkout@v4
 
-      - name: Xcode 27'yi seç
+      - name: En güncel Xcode 26'yı seç
         shell: bash
         run: |
           shopt -s nullglob
-          candidates=(/Applications/Xcode_27*.app)
+          candidates=(/Applications/Xcode_26*.app)
           if (( ${#candidates[@]} == 0 )); then
-            echo "Bu GitHub çalıştırıcısında Xcode 27 bulunamadı." >&2
+            echo "Bu GitHub çalıştırıcısında Xcode 26 bulunamadı." >&2
             printf '%s\n' /Applications/Xcode*.app >&2
             exit 1
           fi
           selected_xcode=$(printf '%s\n' "${candidates[@]}" | sort -V | tail -1)
           sudo xcode-select --switch "$selected_xcode/Contents/Developer"
           xcodebuild -version
-          xcodebuild -showsdks | grep 'iOS 27'
+          xcodebuild -showsdks | grep 'iOS 26'
 
       - name: XcodeGen kur
         run: brew install xcodegen
@@ -50,6 +50,7 @@ jobs:
             -destination 'generic/platform=iOS' \
             -derivedDataPath "$RUNNER_TEMP/MasalciDerivedData" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
+            MASALCI_DEVICE_PREVIEW=YES \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
 
