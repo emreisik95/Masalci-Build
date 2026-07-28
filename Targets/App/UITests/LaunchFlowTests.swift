@@ -10,4 +10,12 @@ final class LaunchFlowTests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Favoriler"].exists)
         XCTAssertTrue(app.tabBars.buttons["Ayarlar"].exists)
     }
+
+    func testHomePassesAccessibilityAudit() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        XCTAssertTrue(app.tabBars.buttons["Ana Sayfa"].waitForExistence(timeout: 8))
+        try app.performAccessibilityAudit()
+    }
 }

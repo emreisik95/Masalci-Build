@@ -269,6 +269,12 @@ struct CreateStoryView: View {
                         .masalCard()
                     }
                     .buttonStyle(.plain)
+                    .accessibilityValue(
+                        model.selectedVoiceID == voice.id ? "Seçildi" : "Seçilmedi"
+                    )
+                    .accessibilityAddTraits(
+                        model.selectedVoiceID == voice.id ? .isSelected : []
+                    )
                 }
             }
         }
@@ -306,6 +312,7 @@ struct CreateStoryView: View {
             .frame(maxWidth: 330)
             .masalCard()
         }
+        .accessibilityAddTraits(.isModal)
     }
 
     private func symbol(for element: StoryElement) -> String {

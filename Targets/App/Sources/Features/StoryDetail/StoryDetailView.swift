@@ -167,7 +167,7 @@ struct StoryDetailView: View {
         .padding(.top, 10)
         .padding(.bottom, 12)
         .frame(maxWidth: .infinity)
-        .background(.ultraThinMaterial)
+        .masalReadableMaterial()
     }
 
     private func roundButton(
@@ -180,7 +180,7 @@ struct StoryDetailView: View {
             Image(systemName: symbol)
                 .foregroundStyle(foreground)
                 .frame(width: 48, height: 48)
-                .background(.ultraThinMaterial, in: Circle())
+                .masalReadableMaterial(in: Circle())
         }
         .accessibilityLabel(label)
     }

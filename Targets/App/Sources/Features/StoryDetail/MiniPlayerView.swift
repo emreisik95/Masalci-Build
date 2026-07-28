@@ -11,6 +11,7 @@ struct MiniPlayerView: View {
                     .foregroundStyle(MasalTheme.cream, MasalTheme.apricot)
                     .frame(width: 44, height: 44)
                     .background(MasalTheme.night700, in: RoundedRectangle(cornerRadius: 14))
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(story.title)
@@ -50,7 +51,7 @@ struct MiniPlayerView: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(.ultraThinMaterial)
+            .masalReadableMaterial()
             .overlay(alignment: .top) {
                 if environment.audioPlayer.duration > 0 {
                     ProgressView(
@@ -58,6 +59,10 @@ struct MiniPlayerView: View {
                         total: environment.audioPlayer.duration
                     )
                     .tint(MasalTheme.apricot)
+                    .accessibilityLabel("Masal ilerlemesi")
+                    .accessibilityValue(
+                        "Yüzde \(Int((environment.audioPlayer.currentTime / environment.audioPlayer.duration) * 100))"
+                    )
                 }
             }
             .accessibilityElement(children: .contain)

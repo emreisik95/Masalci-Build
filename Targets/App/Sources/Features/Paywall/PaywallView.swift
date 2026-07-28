@@ -62,7 +62,7 @@ struct PaywallView: View {
             Button("Kapat", systemImage: "xmark") { dismiss() }
                 .labelStyle(.iconOnly)
                 .frame(width: 48, height: 48)
-                .background(.ultraThinMaterial, in: Circle())
+                .masalReadableMaterial(in: Circle())
                 .padding(16)
         }
         .task { await environment.subscriptionService.loadOfferings() }

@@ -1,3 +1,4 @@
+import MasalciCore
 import SwiftUI
 
 enum MasalTheme {
@@ -48,9 +49,18 @@ struct NightSkyBackground: View {
 }
 
 struct MasalCardSurface: ViewModifier {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
     func body(content: Content) -> some View {
         content
-            .background(MasalTheme.night800.opacity(0.92), in: RoundedRectangle(cornerRadius: 24))
+            .background(
+                MasalTheme.night800.opacity(
+                    AccessibilityPreferences.surfaceOpacity(
+                        reduceTransparency: reduceTransparency
+                    )
+                ),
+                in: RoundedRectangle(cornerRadius: 24)
+            )
             .overlay {
                 RoundedRectangle(cornerRadius: 24)
                     .stroke(MasalTheme.cream.opacity(0.12), lineWidth: 1)
@@ -66,6 +76,8 @@ extension View {
 }
 
 struct MasalPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline.weight(.bold))
@@ -75,6 +87,50 @@ struct MasalPrimaryButtonStyle: ButtonStyle {
             .background(MasalTheme.actionGradient, in: Capsule())
             .shadow(color: MasalTheme.berry.opacity(0.35), radius: 14, y: 8)
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .animation(.snappy(duration: 0.2), value: configuration.isPressed)
+            .animation(
+                AccessibilityPreferences.allowsMotion(reduceMotion: reduceMotion)
+                    ? .snappy(duration: 0.2)
+                    : nil,
+                value: configuration.isPressed
+            )
+    }
+}
+
+private struct MasalReadableMaterialModifier: ViewModifier {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    func body(content: Content) -> some View {
+        content.background(materialStyle)
+    }
+
+    private var materialStyle: AnyShapeStyle {
+        reduceTransparency
+            ? AnyShapeStyle(MasalTheme.night800)
+            : AnyShapeStyle(.ultraThinMaterial)
+    }
+}
+
+private struct MasalReadableMaterialShapeModifier<S: Shape>: ViewModifier {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    let shape: S
+
+    func body(content: Content) -> some View {
+        content.background(materialStyle, in: shape)
+    }
+
+    private var materialStyle: AnyShapeStyle {
+        reduceTransparency
+            ? AnyShapeStyle(MasalTheme.night800)
+            : AnyShapeStyle(.ultraThinMaterial)
+    }
+}
+
+extension View {
+    func masalReadableMaterial() -> some View {
+        modifier(MasalReadableMaterialModifier())
+    }
+
+    func masalReadableMaterial<S: Shape>(in shape: S) -> some View {
+        modifier(MasalReadableMaterialShapeModifier(shape: shape))
     }
 }

@@ -44,10 +44,9 @@ jobs:
       - name: Xcode projesini üret
         run: xcodegen generate --spec project.yml
 
-      - name: SwiftUI unit testlerini çalıştır
+      - name: iPhone simülatörünü hazırla
         shell: bash
         run: |
-          set -o pipefail
           simulator_id=$(
             xcrun simctl list devices available --json |
               ruby -rjson -e '
@@ -58,14 +57,35 @@ jobs:
               '
           )
           xcrun simctl bootstatus "$simulator_id" -b
+          echo "MASALCI_SIMULATOR_ID=$simulator_id" >> "$GITHUB_ENV"
+
+      - name: SwiftUI unit testlerini çalıştır
+        shell: bash
+        run: |
+          set -o pipefail
           xcodebuild test \
             -project Masalci.xcodeproj \
             -scheme Masalci \
             -configuration Debug \
-            -destination "platform=iOS Simulator,id=$simulator_id" \
+            -destination "platform=iOS Simulator,id=$MASALCI_SIMULATOR_ID" \
             -derivedDataPath "$RUNNER_TEMP/MasalciTestDerivedData" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
             -only-testing:MasalciTests \
+            MASALCI_DEVICE_PREVIEW=YES
+
+      - name: Türkçe açılış ve erişilebilirlik akışını doğrula
+        shell: bash
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building \
+            -project Masalci.xcodeproj \
+            -scheme Masalci \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$MASALCI_SIMULATOR_ID" \
+            -derivedDataPath "$RUNNER_TEMP/MasalciTestDerivedData" \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
+            -only-testing:MasalciUITests \
+            -parallel-testing-enabled NO \
             MASALCI_DEVICE_PREVIEW=YES
 
       - name: İmzasız cihaz uygulamasını derle
