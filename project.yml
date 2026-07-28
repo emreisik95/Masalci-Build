@@ -77,6 +77,8 @@ targets:
       base:
         SWIFT_VERSION: 6.0
         GENERATE_INFOPLIST_FILE: true
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Masalcı.app/Masalcı
+        BUNDLE_LOADER: $(TEST_HOST)
   MasalciUITests:
     type: bundle.ui-testing
     platform: iOS
