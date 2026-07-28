@@ -22,6 +22,7 @@ struct StoryDetailView: View {
             }
         }
         .toolbar(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
         .onAppear {
             if model == nil {
                 model = StoryDetailModel(story: story, apiClient: environment.apiClient)

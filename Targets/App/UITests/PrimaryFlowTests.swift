@@ -19,6 +19,7 @@ final class PrimaryFlowTests: XCTestCase {
         XCTAssertTrue(app.buttons["Geri dön"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["Favorilerden çıkar"].exists)
         XCTAssertTrue(app.staticTexts["Ay Işığını Arayan Minik Tavşan"].exists)
+        XCTAssertFalse(app.tabBars.firstMatch.exists)
         keepScreenshot(of: app, named: "04-masal-ayrintisi")
     }
 
