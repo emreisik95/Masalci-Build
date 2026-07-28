@@ -2,6 +2,12 @@ name: iPhone cihaz paketi
 
 on:
   workflow_dispatch:
+    inputs:
+      device_preview:
+        description: "Önizleme verileriyle cihaz paketi üret"
+        required: true
+        default: true
+        type: boolean
   push:
     branches:
       - main
@@ -17,6 +23,9 @@ permissions:
 
 jobs:
   build:
+    env:
+      MASALCI_DEVICE_PREVIEW: ${{ github.event_name == 'workflow_dispatch' && inputs.device_preview == false && 'NO' || 'YES' }}
+      MASALCI_BUILD_CONFIGURATION: ${{ github.event_name == 'workflow_dispatch' && inputs.device_preview == false && 'Release' || 'Debug' }}
     runs-on: macos-26
     timeout-minutes: 30
 
@@ -26,6 +35,9 @@ jobs:
 
       - name: Cihaz imza yetkilerini doğrula
         run: ./scripts/test-device-signing.sh
+
+      - name: Cihaz derleme seçimini doğrula
+        run: ./scripts/test-device-workflow.sh
 
       - name: En güncel Xcode 26'yı seç
         shell: bash
@@ -103,11 +115,11 @@ jobs:
           xcodebuild build \
             -project Masalci.xcodeproj \
             -scheme Masalci \
-            -configuration Debug \
+            -configuration "$MASALCI_BUILD_CONFIGURATION" \
             -destination 'generic/platform=iOS' \
             -derivedDataPath "$RUNNER_TEMP/MasalciDerivedData" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
-            MASALCI_DEVICE_PREVIEW=YES \
+            MASALCI_DEVICE_PREVIEW="$MASALCI_DEVICE_PREVIEW" \
             REVENUECAT_IOS_API_KEY="$REVENUECAT_IOS_API_KEY" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
@@ -115,7 +127,7 @@ jobs:
       - name: Uygulama paketini hazırla
         shell: bash
         run: |
-          products_path="$RUNNER_TEMP/MasalciDerivedData/Build/Products/Debug-iphoneos"
+          products_path="$RUNNER_TEMP/MasalciDerivedData/Build/Products/$MASALCI_BUILD_CONFIGURATION-iphoneos"
           app_count=$(find "$products_path" -maxdepth 1 -type d -name '*.app' | wc -l | tr -d ' ')
           if [[ "$app_count" != "1" ]]; then
             echo "Beklenen tek uygulama paketi bulunamadı." >&2
