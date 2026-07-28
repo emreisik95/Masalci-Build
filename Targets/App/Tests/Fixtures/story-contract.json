@@ -1,0 +1,13 @@
+{
+  "id": "00000000-0000-4000-8000-000000000001",
+  "title": "Ay Işığındaki Minik Tilki",
+  "summary": "Minik bir tilkinin yıldızlarla kurduğu sıcacık dostluk.",
+  "image_url": "/v1/media/covers/minik-tilki.webp",
+  "audio_url": "/v1/media/audio/minik-tilki.mp3",
+  "categories": ["Uyku", "Macera"],
+  "is_featured": true,
+  "view_count": 12,
+  "likes_count": 3,
+  "is_favorite": false,
+  "published_at": "2026-07-27T18:00:00.000Z"
+}

@@ -1,0 +1,76 @@
+name: iPhone cihaz paketi
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/ios-device-build.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - name: Kaynak kodu al
+        uses: actions/checkout@v4
+
+      - name: Xcode 27'yi seç
+        shell: bash
+        run: |
+          shopt -s nullglob
+          candidates=(/Applications/Xcode_27*.app)
+          if (( ${#candidates[@]} == 0 )); then
+            echo "Bu GitHub çalıştırıcısında Xcode 27 bulunamadı." >&2
+            printf '%s\n' /Applications/Xcode*.app >&2
+            exit 1
+          fi
+          selected_xcode=$(printf '%s\n' "${candidates[@]}" | sort -V | tail -1)
+          sudo xcode-select --switch "$selected_xcode/Contents/Developer"
+          xcodebuild -version
+          xcodebuild -showsdks | grep 'iOS 27'
+
+      - name: XcodeGen kur
+        run: brew install xcodegen
+
+      - name: Xcode projesini üret
+        run: xcodegen generate --spec project.yml
+
+      - name: İmzasız cihaz uygulamasını derle
+        run: |
+          xcodebuild build \
+            -project Masalci.xcodeproj \
+            -scheme Masalci \
+            -configuration Debug \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/MasalciDerivedData" \
+            -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Uygulama paketini hazırla
+        shell: bash
+        run: |
+          products_path="$RUNNER_TEMP/MasalciDerivedData/Build/Products/Debug-iphoneos"
+          app_count=$(find "$products_path" -maxdepth 1 -type d -name '*.app' | wc -l | tr -d ' ')
+          if [[ "$app_count" != "1" ]]; then
+            echo "Beklenen tek uygulama paketi bulunamadı." >&2
+            find "$products_path" -maxdepth 1 -type d -name '*.app' -print >&2
+            exit 1
+          fi
+          app_path=$(find "$products_path" -maxdepth 1 -type d -name '*.app' -print -quit)
+          mkdir -p "$RUNNER_TEMP/MasalciArtifact"
+          ditto -c -k --sequesterRsrc --keepParent "$app_path" "$RUNNER_TEMP/MasalciArtifact/Masalci-unsigned.app.zip"
+
+      - name: Cihaz paketini yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: Masalci-unsigned-device-app
+          path: ${{ runner.temp }}/MasalciArtifact/Masalci-unsigned.app.zip
+          if-no-files-found: error
+          retention-days: 1

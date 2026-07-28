@@ -1,0 +1,19 @@
+.DS_Store
+.worktrees/
+
+# Local secrets and runtime state
+.env
+.env.*
+!.env.example
+
+# Xcode user state and build output
+DerivedData/
+.build/
+*.xcuserstate
+xcuserdata/
+
+# Backend dependencies and generated output
+node_modules/
+dist/
+coverage/
+uploads/
