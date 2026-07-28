@@ -7,6 +7,9 @@ on:
       - main
     paths:
       - .github/workflows/ios-device-build.yml
+      - Package.swift
+      - project.yml
+      - Targets/**
 
 permissions:
   contents: read
@@ -66,7 +69,13 @@ jobs:
             MASALCI_DEVICE_PREVIEW=YES
 
       - name: İmzasız cihaz uygulamasını derle
+        env:
+          REVENUECAT_IOS_API_KEY: ${{ secrets.REVENUECAT_IOS_API_KEY }}
         run: |
+          if [[ -z "$REVENUECAT_IOS_API_KEY" ]]; then
+            echo "RevenueCat public iOS anahtarı tanımlı değil." >&2
+            exit 1
+          fi
           xcodebuild build \
             -project Masalci.xcodeproj \
             -scheme Masalci \
@@ -75,6 +84,7 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/MasalciDerivedData" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
             MASALCI_DEVICE_PREVIEW=YES \
+            REVENUECAT_IOS_API_KEY="$REVENUECAT_IOS_API_KEY" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO
 
