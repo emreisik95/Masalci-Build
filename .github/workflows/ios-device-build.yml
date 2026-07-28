@@ -10,6 +10,7 @@ on:
       - Package.swift
       - project.yml
       - Targets/**
+      - scripts/**
 
 permissions:
   contents: read
@@ -22,6 +23,9 @@ jobs:
     steps:
       - name: Kaynak kodu al
         uses: actions/checkout@v4
+
+      - name: Cihaz imza yetkilerini doğrula
+        run: ./scripts/test-device-signing.sh
 
       - name: En güncel Xcode 26'yı seç
         shell: bash
