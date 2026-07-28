@@ -54,6 +54,18 @@ jobs:
                 print iphone.fetch("udid")
               '
           )
+          if ! xcrun simctl boot "$simulator_id"; then
+            simulator_state=$(
+              xcrun simctl list devices --json |
+                SIMULATOR_ID="$simulator_id" ruby -rjson -e '
+                  devices = JSON.parse(STDIN.read).fetch("devices").values.flatten
+                  device = devices.find { |item| item.fetch("udid") == ENV.fetch("SIMULATOR_ID") }
+                  print device&.fetch("state", "")
+                '
+            )
+            [[ "$simulator_state" == "Booted" ]] || exit 1
+          fi
+          xcrun simctl bootstatus "$simulator_id" --block
           xcodebuild test \
             -project Masalci.xcodeproj \
             -scheme Masalci \
