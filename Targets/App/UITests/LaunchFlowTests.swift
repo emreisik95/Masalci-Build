@@ -1,5 +1,6 @@
 import XCTest
 
+@MainActor
 final class LaunchFlowTests: XCTestCase {
     func testTurkishTabsAreVisible() {
         let app = XCUIApplication()

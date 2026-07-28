@@ -70,6 +70,7 @@ struct SettingsView: View {
                     .font(.system(size: 44))
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(MasalTheme.cream, MasalTheme.lavender)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(environment.profile?.accountKind == .apple ? "Masalcı Ailesi" : "Misafir Masalcı")
                         .font(.headline)

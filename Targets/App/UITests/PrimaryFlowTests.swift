@@ -1,5 +1,6 @@
 import XCTest
 
+@MainActor
 final class PrimaryFlowTests: XCTestCase {
     private func launchApp() -> XCUIApplication {
         let app = XCUIApplication()
@@ -34,7 +35,7 @@ final class PrimaryFlowTests: XCTestCase {
         XCTAssertTrue(createButton.isEnabled)
         createButton.tap()
 
-        XCTAssertTrue(app.buttons["Bitti"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.buttons["Geri dön"].waitForExistence(timeout: 8))
         XCTAssertTrue(app.staticTexts["Ay Işığını Arayan Minik Tavşan"].exists)
     }
 
