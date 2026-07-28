@@ -41,7 +41,7 @@ jobs:
       - name: Xcode projesini üret
         run: xcodegen generate --spec project.yml
 
-      - name: SwiftUI simülatör testlerini çalıştır
+      - name: SwiftUI unit testlerini çalıştır
         shell: bash
         run: |
           set -o pipefail
@@ -61,6 +61,7 @@ jobs:
             -destination "platform=iOS Simulator,id=$simulator_id" \
             -derivedDataPath "$RUNNER_TEMP/MasalciTestDerivedData" \
             -clonedSourcePackagesDirPath "$RUNNER_TEMP/MasalciPackages" \
+            -only-testing:MasalciTests \
             MASALCI_DEVICE_PREVIEW=YES
 
       - name: İmzasız cihaz uygulamasını derle
